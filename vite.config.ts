@@ -20,10 +20,60 @@ export default defineConfig(() => {
             return;
           }
           const distDir = path.resolve(__dirname, 'dist');
+          if (!fs.existsSync(distDir)) {
+            return;
+          }
+
           const srcAssets = path.resolve(__dirname, 'src/assets');
           const distAssets = path.resolve(distDir, 'src/assets');
-          if (fs.existsSync(distDir) && fs.existsSync(srcAssets)) {
+          if (fs.existsSync(srcAssets)) {
             fs.cpSync(srcAssets, distAssets, {recursive: true, force: true});
+          }
+
+          const staticRuntimeMounts: Array<{
+            src: string;
+            dest: string;
+            filter: (filePath: string) => boolean;
+          }> = [
+            {
+              src: path.resolve(__dirname, 'node_modules/tesseract.js/dist'),
+              dest: path.resolve(distDir, 'tesseract/worker'),
+              filter: (filePath) =>
+                fs.statSync(filePath).isDirectory() ||
+                path.basename(filePath) === 'worker.min.js' ||
+                path.basename(filePath) === 'worker.min.js.LICENSE.txt',
+            },
+            {
+              src: path.resolve(__dirname, 'node_modules/tesseract.js-core'),
+              dest: path.resolve(distDir, 'tesseract/core'),
+              filter: (filePath) =>
+                fs.statSync(filePath).isDirectory() ||
+                /^tesseract-core.*\.(js|wasm)$/.test(path.basename(filePath)),
+            },
+            {
+              src: path.resolve(__dirname, 'node_modules/@tesseract.js-data/eng/4.0.0'),
+              dest: path.resolve(distDir, 'tesseract/lang'),
+              filter: (filePath) =>
+                fs.statSync(filePath).isDirectory() ||
+                filePath.endsWith('.traineddata.gz'),
+            },
+            {
+              src: path.resolve(__dirname, 'node_modules/pdfjs-dist/build'),
+              dest: path.resolve(distDir, 'pdfjs'),
+              filter: (filePath) =>
+                fs.statSync(filePath).isDirectory() ||
+                filePath.endsWith('.min.mjs'),
+            },
+          ];
+
+          for (const mount of staticRuntimeMounts) {
+            if (fs.existsSync(mount.src)) {
+              fs.cpSync(mount.src, mount.dest, {
+                recursive: true,
+                force: true,
+                filter: mount.filter,
+              });
+            }
           }
         },
       },
