@@ -31,27 +31,37 @@ import {
 
 const VALID_HTML_EXTS = ['.html', '.htm'];
 const VALID_IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif'];
+const VALID_IMAGE_MIME_TYPES = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/jpg',
+  'image/webp',
+  'image/bmp',
+  'image/gif',
+]);
 const VALID_PDF_EXTS = ['.pdf'];
+const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024;
 const HISTORY_STORAGE_KEY = 'sap_su53_local_sessions_v1';
 const MAX_SAVED_SESSIONS = 8;
 
 function detectFileKind(file: File): 'html' | 'image' | 'pdf' | null {
   const lowerName = file.name.toLowerCase();
+  const normalizedType = file.type.toLowerCase();
   if (
     VALID_HTML_EXTS.some((ext) => lowerName.endsWith(ext)) ||
-    file.type === 'text/html'
+    normalizedType === 'text/html'
   ) {
     return 'html';
   }
   if (
-    file.type === 'application/pdf' ||
+    normalizedType === 'application/pdf' ||
     VALID_PDF_EXTS.some((ext) => lowerName.endsWith(ext))
   ) {
     return 'pdf';
   }
   if (
-    file.type.startsWith('image/') ||
-    VALID_IMAGE_EXTS.some((ext) => lowerName.endsWith(ext))
+    VALID_IMAGE_MIME_TYPES.has(normalizedType) ||
+    (!normalizedType && VALID_IMAGE_EXTS.some((ext) => lowerName.endsWith(ext)))
   ) {
     return 'image';
   }
@@ -59,8 +69,9 @@ function detectFileKind(file: File): 'html' | 'image' | 'pdf' | null {
 }
 
 function inferImageMimeType(file: File): string {
-  if (file.type && file.type.startsWith('image/')) {
-    return file.type;
+  const normalizedType = file.type.toLowerCase();
+  if (VALID_IMAGE_MIME_TYPES.has(normalizedType)) {
+    return normalizedType === 'image/jpg' ? 'image/jpeg' : normalizedType;
   }
   const lower = file.name.toLowerCase();
   if (lower.endsWith('.png')) return 'image/png';
@@ -70,12 +81,34 @@ function inferImageMimeType(file: File): string {
   return 'image/jpeg';
 }
 
+function isValidSavedSession(entry: unknown): entry is SavedExtractionSession {
+  if (!entry || typeof entry !== 'object') return false;
+  const candidate = entry as Partial<SavedExtractionSession>;
+  if (
+    typeof candidate.id !== 'string' ||
+    typeof candidate.createdAt !== 'string' ||
+    !Array.isArray(candidate.fileNames) ||
+    !candidate.result ||
+    typeof candidate.result !== 'object'
+  ) {
+    return false;
+  }
+  const res = candidate.result as Partial<BatchExtractionResult>;
+  return (
+    Array.isArray(res.objects) &&
+    Array.isArray(res.detectedCriticals) &&
+    !!res.metadata &&
+    typeof res.metadata === 'object'
+  );
+}
+
 function loadSavedSessions(): SavedExtractionSession[] {
   try {
     const raw = window.localStorage.getItem(HISTORY_STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as SavedExtractionSession[]) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(isValidSavedSession).slice(0, MAX_SAVED_SESSIONS);
   } catch {
     return [];
   }
@@ -145,11 +178,16 @@ export default function App() {
 
       let validCount = 0;
       let invalidCount = 0;
+      let oversizedCount = 0;
 
       files.forEach((file) => {
         const kind = detectFileKind(file);
         if (!kind) {
           invalidCount++;
+          return;
+        }
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          oversizedCount++;
           return;
         }
 
@@ -217,14 +255,16 @@ export default function App() {
         }
       });
 
-      if (invalidCount > 0 && validCount === 0) {
+      if (oversizedCount > 0 && validCount === 0 && invalidCount === 0) {
+        showToast('Arquivo excede o limite de 25 MB por item para processamento local.', 'error');
+      } else if (invalidCount > 0 && validCount === 0) {
         showToast(
           'Por favor, selecione arquivos HTML (.HTML/.HTM), PDF (.PDF) ou imagens (.PNG, .JPG, .WEBP).',
           'error'
         );
-      } else if (invalidCount > 0) {
+      } else if (invalidCount > 0 || oversizedCount > 0) {
         showToast(
-          `${validCount} arquivo(s) adicionado(s). ${invalidCount} arquivo(s) ignorado(s) por formato inválido.`
+          `${validCount} arquivo(s) adicionado(s). ${invalidCount + oversizedCount} arquivo(s) ignorado(s) por formato inválido ou tamanho acima de 25 MB.`
         );
       } else if (validCount > 0) {
         showToast(`${validCount} arquivo(s) adicionado(s) à fila.`);

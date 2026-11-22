@@ -146,6 +146,8 @@ export async function extractSU53DataFromPdfs(
     const loadingTask = pdfjsLib.getDocument({
       data: new Uint8Array(pdfFile.pdfData.slice(0)),
       useWorkerFetch: false,
+      maxImageSize: 24_000_000,
+      disableFontFace: true,
     });
 
     const pdf = await loadingTask.promise;

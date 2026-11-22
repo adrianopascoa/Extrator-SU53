@@ -93,7 +93,8 @@ export function buildAndDownloadSU53Excel(
 
         obj.fields.forEach((field) => {
           const userValues =
-            field.valuesByUser && user in field.valuesByUser
+            field.valuesByUser &&
+            Object.prototype.hasOwnProperty.call(field.valuesByUser, user)
               ? field.valuesByUser[user]
               : field.valuesByUser
               ? null

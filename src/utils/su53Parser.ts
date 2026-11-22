@@ -377,8 +377,12 @@ export async function extractSU53FromBatch(
           }
         });
 
-        const valuesByUser: Record<string, string[]> = {};
+        const valuesByUser: Record<string, string[]> = Object.create(null) as Record<
+          string,
+          string[]
+        >;
         for (const [u, uSet] of fieldAcc.valuesByUser.entries()) {
+          if (u === '__proto__' || u === 'constructor' || u === 'prototype') continue;
           valuesByUser[u] = Array.from(uSet);
         }
 
@@ -505,7 +509,10 @@ export function projectObjectsForUser(
     let hasCriticalValue = false;
 
     for (const field of obj.fields) {
-      if (field.valuesByUser && selectedUser in field.valuesByUser) {
+      if (
+        field.valuesByUser &&
+        Object.prototype.hasOwnProperty.call(field.valuesByUser, selectedUser)
+      ) {
         const userVals = field.valuesByUser[selectedUser] || [];
         userVals.forEach((v) => {
           if (isCriticalToken(v, criticalSet)) hasCriticalValue = true;

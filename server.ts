@@ -11,6 +11,14 @@ const PORT = Number(process.env.PORT) || 3000;
 
 async function startServer() {
   const app = express();
+  app.disable('x-powered-by');
+
+  app.use((_req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    next();
+  });
 
   app.get('/api/health', (_req: Request, res: Response) => {
     res.json({ status: 'ok' });
