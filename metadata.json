@@ -1,0 +1,6 @@
+{
+  "name": "Extrator SAP SU53",
+  "description": "Consolidador inteligente de logs de autorização SAP SU53 em lote com detecção de objetos e transações críticas, processamento 100% local no navegador.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
