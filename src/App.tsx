@@ -1,12 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { BookOpen, Clock, ShieldCheck, SlidersHorizontal } from 'lucide-react';
-import { CriticalRulesModal } from './components/CriticalRulesModal';
 import { ResultWorkspace } from './components/ResultWorkspace';
-import {
-  SavedExtractionSession,
-  SessionHistoryModal,
-} from './components/SessionHistoryModal';
-import { Su53GuideModal } from './components/Su53GuideModal';
+import type { SavedExtractionSession } from './components/SessionHistoryModal';
 import { ToastStack } from './components/ToastStack';
 import { UploadQueueSection } from './components/UploadQueueSection';
 import {
@@ -18,7 +13,22 @@ import {
   ToastItem,
 } from './types/su53';
 import { loadCriticalItems, saveCriticalItems } from './utils/criticalRules';
-import { warmUpOcrWorker } from './utils/su53ImageOcr';
+
+const CriticalRulesModal = lazy(() =>
+  import('./components/CriticalRulesModal').then((m) => ({
+    default: m.CriticalRulesModal,
+  }))
+);
+const SessionHistoryModal = lazy(() =>
+  import('./components/SessionHistoryModal').then((m) => ({
+    default: m.SessionHistoryModal,
+  }))
+);
+const Su53GuideModal = lazy(() =>
+  import('./components/Su53GuideModal').then((m) => ({
+    default: m.Su53GuideModal,
+  }))
+);
 import {
   buildCriticalSet,
   extractSU53FromBatch,
@@ -211,7 +221,6 @@ export default function App() {
           };
           reader.readAsText(file, 'ISO-8859-1');
         } else if (kind === 'pdf') {
-          warmUpOcrWorker();
           reader.onload = (e) => {
             const pdfData =
               e.target?.result instanceof ArrayBuffer ? e.target.result : undefined;
@@ -232,7 +241,7 @@ export default function App() {
           };
           reader.readAsArrayBuffer(file);
         } else {
-          warmUpOcrWorker();
+          void import('./utils/su53ImageOcr').then((m) => m.warmUpOcrWorker());
           reader.onload = (e) => {
             const dataUrl =
               typeof e.target?.result === 'string' ? e.target.result : '';
@@ -1061,27 +1070,35 @@ export default function App() {
         </div>
       </footer>
 
-      <Su53GuideModal
-        isOpen={isGuideOpen}
-        criticalItems={criticalItems}
-        onClose={() => setIsGuideOpen(false)}
-        onOpenCriticalRules={() => setIsCriticalRulesOpen(true)}
-      />
-      <CriticalRulesModal
-        isOpen={isCriticalRulesOpen}
-        criticalItems={criticalItems}
-        onClose={() => setIsCriticalRulesOpen(false)}
-        onUpdateItems={handleUpdateCriticalItems}
-      />
-      <SessionHistoryModal
-        isOpen={isHistoryOpen}
-        sessions={sessions}
-        onClose={() => setIsHistoryOpen(false)}
-        onRestoreSession={handleRestoreSession}
-        onDeleteSession={handleDeleteSession}
-        onClearHistory={handleClearHistory}
-        onExportHistory={handleExportHistory}
-      />
+      <Suspense fallback={null}>
+        {isGuideOpen && (
+          <Su53GuideModal
+            isOpen={isGuideOpen}
+            criticalItems={criticalItems}
+            onClose={() => setIsGuideOpen(false)}
+            onOpenCriticalRules={() => setIsCriticalRulesOpen(true)}
+          />
+        )}
+        {isCriticalRulesOpen && (
+          <CriticalRulesModal
+            isOpen={isCriticalRulesOpen}
+            criticalItems={criticalItems}
+            onClose={() => setIsCriticalRulesOpen(false)}
+            onUpdateItems={handleUpdateCriticalItems}
+          />
+        )}
+        {isHistoryOpen && (
+          <SessionHistoryModal
+            isOpen={isHistoryOpen}
+            sessions={sessions}
+            onClose={() => setIsHistoryOpen(false)}
+            onRestoreSession={handleRestoreSession}
+            onDeleteSession={handleDeleteSession}
+            onClearHistory={handleClearHistory}
+            onExportHistory={handleExportHistory}
+          />
+        )}
+      </Suspense>
 
       <ToastStack toasts={toasts} onDismiss={dismissToast} />
     </div>

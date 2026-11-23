@@ -30,17 +30,18 @@ async function startServer() {
   const tesseractLangDir = path.resolve(__dirname, 'node_modules/@tesseract.js-data/eng/4.0.0');
   const pdfjsBuildDir = path.resolve(__dirname, 'node_modules/pdfjs-dist/build');
 
+  const staticCacheOptions = { maxAge: '30d', immutable: true };
   if (fs.existsSync(tesseractWorkerDir)) {
-    app.use('/tesseract/worker', express.static(tesseractWorkerDir, { maxAge: '7d' }));
+    app.use('/tesseract/worker', express.static(tesseractWorkerDir, staticCacheOptions));
   }
   if (fs.existsSync(tesseractCoreDir)) {
-    app.use('/tesseract/core', express.static(tesseractCoreDir, { maxAge: '7d' }));
+    app.use('/tesseract/core', express.static(tesseractCoreDir, staticCacheOptions));
   }
   if (fs.existsSync(tesseractLangDir)) {
-    app.use('/tesseract/lang', express.static(tesseractLangDir, { maxAge: '7d' }));
+    app.use('/tesseract/lang', express.static(tesseractLangDir, staticCacheOptions));
   }
   if (fs.existsSync(pdfjsBuildDir)) {
-    app.use('/pdfjs', express.static(pdfjsBuildDir, { maxAge: '7d' }));
+    app.use('/pdfjs', express.static(pdfjsBuildDir, staticCacheOptions));
   }
 
   const isRunningTsx =

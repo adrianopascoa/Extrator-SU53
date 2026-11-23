@@ -2,12 +2,11 @@ import * as pdfjsLib from 'pdfjs-dist';
 import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 import { LoadedFile } from '../types/su53';
 import {
-  extractSU53DataFromImages,
   OcrLine,
   OcrSU53Extraction,
   OcrWord,
   parseSu53Lines,
-} from './su53ImageOcr';
+} from './su53TextEngine';
 
 let workerConfigured = false;
 
@@ -226,6 +225,7 @@ export async function extractSU53DataFromPdfs(
   }
 
   if (pagesNeedingOcr.length > 0) {
+    const { extractSU53DataFromImages } = await import('./su53ImageOcr');
     const ocrResults = await extractSU53DataFromImages(
       pagesNeedingOcr.map((p) => p.file)
     );

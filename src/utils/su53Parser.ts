@@ -6,12 +6,10 @@ import {
 } from '../types/su53';
 import { DEFAULT_CRITICAL_ITEMS } from './criticalRules';
 import {
-  extractSU53DataFromImages,
   extractUserCandidateFromText,
   INVALID_USER_TOKENS,
   OcrSU53Extraction,
-} from './su53ImageOcr';
-import { extractSU53DataFromPdfs } from './su53PdfExtractor';
+} from './su53TextEngine';
 
 export const CRITICAL_ITEMS = new Set<string>(DEFAULT_CRITICAL_ITEMS);
 export const UNIDENTIFIED_USER = 'Não identificado';
@@ -328,6 +326,7 @@ export async function extractSU53FromBatch(
   }
 
   if (imageFiles.length > 0) {
+    const { extractSU53DataFromImages } = await import('./su53ImageOcr');
     const imageResponses = await extractSU53DataFromImages(imageFiles);
     totalRowsProcessed += mergeStructuredExtractionsIntoMaps(
       imageResponses,
@@ -338,6 +337,7 @@ export async function extractSU53FromBatch(
   }
 
   if (pdfFiles.length > 0) {
+    const { extractSU53DataFromPdfs } = await import('./su53PdfExtractor');
     const pdfResponses = await extractSU53DataFromPdfs(pdfFiles);
     totalRowsProcessed += mergeStructuredExtractionsIntoMaps(
       pdfResponses,

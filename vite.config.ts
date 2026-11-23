@@ -48,7 +48,9 @@ export default defineConfig(() => {
               dest: path.resolve(distDir, 'tesseract/core'),
               filter: (filePath) =>
                 fs.statSync(filePath).isDirectory() ||
-                /^tesseract-core.*\.(js|wasm)$/.test(path.basename(filePath)),
+                /^tesseract-core(?:-(?:relaxed)?simd)?-lstm\.wasm\.js$/.test(
+                  path.basename(filePath)
+                ),
             },
             {
               src: path.resolve(__dirname, 'node_modules/@tesseract.js-data/eng/4.0.0'),
@@ -62,7 +64,7 @@ export default defineConfig(() => {
               dest: path.resolve(distDir, 'pdfjs'),
               filter: (filePath) =>
                 fs.statSync(filePath).isDirectory() ||
-                filePath.endsWith('.min.mjs'),
+                path.basename(filePath) === 'pdf.worker.min.mjs',
             },
           ];
 
