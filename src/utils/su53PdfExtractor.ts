@@ -151,11 +151,17 @@ export async function extractSU53DataFromPdfs(
     });
 
     const pdf = await loadingTask.promise;
+    const MAX_PDF_PAGES = 50;
     let lastDocUser: string | undefined;
     let lastDocSystem: string | undefined;
     let lastDocClient: string | undefined;
 
     try {
+      if (pdf.numPages > MAX_PDF_PAGES) {
+        throw new Error(
+          `O arquivo PDF "${pdfFile.name}" possui ${pdf.numPages} páginas e excede o limite de ${MAX_PDF_PAGES} páginas para processamento local.`
+        );
+      }
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page = await pdf.getPage(pageNum);
         const baseViewport = page.getViewport({ scale: 1 });
