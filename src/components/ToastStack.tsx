@@ -23,7 +23,7 @@ export function ToastStack({ toasts, onDismiss }: ToastStackProps) {
             className={`pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-lg shadow-lg text-xs font-medium transition-all duration-150 ${
               isError
                 ? 'bg-red-600 text-white border border-red-700'
-                : 'bg-slate-900 text-white border border-slate-800'
+                : 'bg-slate-900 dark:bg-slate-800 text-white border border-slate-800 dark:border-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5 min-w-0">

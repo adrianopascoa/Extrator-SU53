@@ -126,25 +126,25 @@ export function ResultWorkspace({
       <section
         id="resumo"
         aria-labelledby="painel-diagnostico-heading"
-        className="bg-white rounded-2xl border border-slate-200/90 shadow-[0_1px_3px_rgba(15,23,42,0.04)] overflow-hidden"
+        className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-[0_1px_3px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3)] overflow-hidden transition-colors duration-200"
       >
         {/* Cabeçalho do Painel 02 */}
-        <div className="px-6 py-5 border-b border-slate-200 flex items-start justify-between gap-4">
+        <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex items-start justify-between gap-4">
           <div className="flex items-start gap-3.5">
             <span
               aria-hidden="true"
-              className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 font-mono text-xs font-bold flex items-center justify-center shrink-0"
+              className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-mono text-xs font-bold flex items-center justify-center shrink-0"
             >
               02
             </span>
             <div>
               <h2
                 id="painel-diagnostico-heading"
-                className="text-base sm:text-lg font-semibold text-slate-900"
+                className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100"
               >
                 Painel de Consolidação &amp; Diagnóstico
               </h2>
-              <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                 Visão consolidada por objeto de autorização, usuário, campos críticos e exportação em planilha.
               </p>
             </div>
@@ -153,9 +153,9 @@ export function ResultWorkspace({
           <button
             type="button"
             onClick={onOpenCriticalRules}
-            className="min-h-[36px] px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            className="min-h-[36px] px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
           >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
+            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" aria-hidden="true" />
             <span>Regras Críticas ({criticalItems.length})</span>
           </button>
         </div>
@@ -163,47 +163,47 @@ export function ResultWorkspace({
         {/* Estado Vazio */}
         <div className="px-6 py-10 sm:py-12 text-center space-y-6">
           <div className="max-w-lg mx-auto space-y-3">
-            <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200/90 text-slate-400 flex items-center justify-center mx-auto shadow-2xs">
+            <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 text-slate-400 dark:text-slate-500 flex items-center justify-center mx-auto shadow-2xs">
               <FileText className="w-6 h-6" aria-hidden="true" />
             </div>
-            <h3 className="text-base font-semibold text-slate-900">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
               Nenhum log consolidado ainda
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               Carregue relatórios HTML, PDFs ou prints da transação{' '}
-              <span className="font-mono text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded text-xs">
+              <span className="font-mono text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-xs">
                 SU53
               </span>{' '}
               e clique em{' '}
-              <strong className="font-semibold text-slate-700">Executar Extração</strong> para
+              <strong className="font-semibold text-slate-700 dark:text-slate-200">Executar Extração</strong> para
               agrupar objetos, separar por usuário e identificar autorizações críticas.
             </p>
           </div>
 
           {/* Faixa de Prontidão */}
-          <div className="max-w-3xl mx-auto border border-slate-200 rounded-xl bg-slate-50/60 grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 text-left">
+          <div className="max-w-3xl mx-auto border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/60 dark:bg-slate-950/60 grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-800 text-left">
             <div className="p-4">
-              <span className="text-xs font-medium text-slate-600 block">Objetos Únicos</span>
-              <span className="text-xs font-mono tabular-nums text-slate-400 mt-1.5 block">
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-300 block">Objetos Únicos</span>
+              <span className="text-xs font-mono tabular-nums text-slate-400 dark:text-slate-500 mt-1.5 block">
                 -- · aguardando entrada
               </span>
             </div>
             <div className="p-4">
-              <span className="text-xs font-medium text-slate-600 block">Auditoria Crítica</span>
-              <span className="text-xs font-mono tabular-nums text-slate-400 mt-1.5 block">
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-300 block">Auditoria Crítica</span>
+              <span className="text-xs font-mono tabular-nums text-slate-400 dark:text-slate-500 mt-1.5 block">
                 -- · {criticalItems.length} regras ativas
               </span>
             </div>
             <div className="p-4">
-              <span className="text-xs font-medium text-slate-600 block">Separação por Usuário</span>
-              <span className="text-xs font-mono tabular-nums text-slate-400 mt-1.5 block">
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-300 block">Separação por Usuário</span>
+              <span className="text-xs font-mono tabular-nums text-slate-400 dark:text-slate-500 mt-1.5 block">
                 -- · aguardando entrada
               </span>
             </div>
           </div>
 
-          <p className="text-xs text-slate-500 inline-flex items-center justify-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" aria-hidden="true" />
+          <p className="text-xs text-slate-500 dark:text-slate-400 inline-flex items-center justify-center gap-1.5">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
             <span>
               Privacidade garantida: o processamento HTML, PDF e OCR é feito localmente no navegador sem envio a servidores externos.
             </span>
@@ -326,14 +326,14 @@ export function ResultWorkspace({
           Resumo do Lote Extraído
         </h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-            <span className="text-xs font-medium text-slate-500 block">
+          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.25)] transition-colors duration-200">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block">
               {identifiedUsersCount > 1
                 ? `Usuários (${identifiedUsersCount})`
                 : 'Usuário(s)'}
             </span>
             <span
-              className="text-sm sm:text-base font-bold text-slate-900 font-mono mt-1.5 block truncate"
+              className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 font-mono mt-1.5 block truncate"
               title={result.metadata.user}
             >
               {effectiveSelectedUser !== 'ALL'
@@ -341,24 +341,24 @@ export function ResultWorkspace({
                 : result.metadata.user}
             </span>
           </div>
-          <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-            <span className="text-xs font-medium text-slate-500 block">Sistema / Mandante</span>
+          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.25)] transition-colors duration-200">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block">Sistema / Mandante</span>
             <span
-              className="text-sm sm:text-base font-bold text-slate-900 font-mono mt-1.5 block truncate"
+              className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 font-mono mt-1.5 block truncate"
               title={result.metadata.sys}
             >
               {result.metadata.sys}
             </span>
           </div>
-          <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-            <span className="text-xs font-medium text-slate-500 block">Objetos Únicos</span>
-            <span className="text-sm sm:text-base font-bold text-sap-600 font-mono tabular-nums mt-1.5 block">
+          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.25)] transition-colors duration-200">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block">Objetos Únicos</span>
+            <span className="text-sm sm:text-base font-bold text-sap-600 dark:text-sky-400 font-mono tabular-nums mt-1.5 block">
               {userScopedObjects.length}
             </span>
           </div>
-          <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-            <span className="text-xs font-medium text-slate-500 block">Arquivos / Linhas</span>
-            <span className="text-sm sm:text-base font-bold text-slate-900 font-mono tabular-nums mt-1.5 block">
+          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.25)] transition-colors duration-200">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block">Arquivos / Linhas</span>
+            <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 font-mono tabular-nums mt-1.5 block">
               {result.metadata.rowLabel}
             </span>
           </div>
@@ -369,10 +369,10 @@ export function ResultWorkspace({
       <section
         id="log-consolidado"
         aria-labelledby="log-consolidado-heading"
-        className="bg-white rounded-2xl border border-slate-200/90 shadow-[0_1px_3px_rgba(15,23,42,0.04)] overflow-hidden flex flex-col"
+        className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-[0_1px_3px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col transition-colors duration-200"
       >
         {/* Cabeçalho do Resultado */}
-        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/90 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3.5">
             <span
               aria-hidden="true"
@@ -382,16 +382,16 @@ export function ResultWorkspace({
             </span>
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h2 id="log-consolidado-heading" className="text-base sm:text-lg font-semibold text-slate-900">
+                <h2 id="log-consolidado-heading" className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100">
                   Painel de Consolidação &amp; Diagnóstico
                 </h2>
                 {hasManualEdits && (
-                  <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-semibold">
+                  <span className="px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/70 text-amber-800 dark:text-amber-300 text-[11px] font-semibold">
                     Editado manualmente
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Agrupado por Objeto e Campo sem duplicidades.
               </p>
             </div>
@@ -402,7 +402,7 @@ export function ResultWorkspace({
             <div
               role="tablist"
               aria-label="Modo de visualização do log"
-              className="inline-flex items-center p-1 bg-slate-200/70 rounded-lg mr-1"
+              className="inline-flex items-center p-1 bg-slate-200/70 dark:bg-slate-800 rounded-lg mr-1"
             >
               <button
                 type="button"
@@ -411,8 +411,8 @@ export function ResultWorkspace({
                 onClick={() => onViewModeChange('console')}
                 className={`min-h-[32px] px-3 py-1 text-xs font-medium rounded-md transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                   viewMode === 'console'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                 }`}
               >
                 <Terminal className="w-3.5 h-3.5" aria-hidden="true" />
@@ -425,8 +425,8 @@ export function ResultWorkspace({
                 onClick={() => onViewModeChange('table')}
                 className={`min-h-[32px] px-3 py-1 text-xs font-medium rounded-md transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                   viewMode === 'table'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                 }`}
               >
                 <Table2 className="w-3.5 h-3.5" aria-hidden="true" />
@@ -438,9 +438,9 @@ export function ResultWorkspace({
               type="button"
               onClick={onOpenCriticalRules}
               title="Configurar lista de objetos e transações críticas"
-              className="min-h-[40px] px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
+              className="min-h-[40px] px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-semibold rounded-lg transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
+              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" aria-hidden="true" />
               <span>Regras ({criticalItems.length})</span>
             </button>
 
@@ -448,7 +448,7 @@ export function ResultWorkspace({
               type="button"
               onClick={() => onDownload(isConsoleEditing ? consoleDraft : plainOutput)}
               disabled={!(isConsoleEditing ? consoleDraft : plainOutput)}
-              className="min-h-[40px] px-4 py-2 bg-white hover:bg-slate-100 disabled:opacity-50 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
+              className="min-h-[40px] px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-semibold rounded-lg transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
             >
               <Download className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Baixar .TXT</span>
@@ -458,9 +458,9 @@ export function ResultWorkspace({
               type="button"
               onClick={() => onExportExcel(filteredObjects)}
               disabled={filteredObjects.length === 0}
-              className="min-h-[40px] px-4 py-2 bg-white hover:bg-slate-100 disabled:opacity-50 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
+              className="min-h-[40px] px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-semibold rounded-lg transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" aria-hidden="true" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
               <span>Exportar Excel</span>
             </button>
 
@@ -468,7 +468,7 @@ export function ResultWorkspace({
               type="button"
               onClick={() => onCopy(isConsoleEditing ? consoleDraft : plainOutput)}
               disabled={!(isConsoleEditing ? consoleDraft : plainOutput)}
-              className="min-h-[40px] px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-600"
+              className="min-h-[40px] px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-600 dark:focus-visible:ring-offset-slate-900"
             >
               <Copy className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Copiar Log</span>
@@ -477,12 +477,12 @@ export function ResultWorkspace({
         </div>
 
         {/* Barra de Filtro por Objeto / Valor + Seletor por Usuário */}
-        <div className="px-6 py-4 border-b border-slate-200 bg-white space-y-3">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-3">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 flex-1">
               <div className="relative flex-1 max-w-md">
                 <Search
-                  className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
                   aria-hidden="true"
                 />
                 <input
@@ -494,14 +494,14 @@ export function ResultWorkspace({
                   }}
                   placeholder="Filtrar por objeto, valor ou usuário (ex: S_TCODE, ME29N)..."
                   aria-label="Filtrar objetos, valores ou usuários extraídos"
-                  className="w-full min-h-[40px] pl-9 pr-9 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg focus:outline-none focus:border-sap-500 focus:ring-2 focus:ring-sap-500/20 font-mono transition-colors"
+                  className="w-full min-h-[40px] pl-9 pr-9 py-2 text-xs sm:text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-sap-500 focus:ring-2 focus:ring-sap-500/20 font-mono transition-colors"
                 />
                 {filterQuery && (
                   <button
                     type="button"
                     onClick={() => onFilterQueryChange('')}
                     aria-label="Limpar filtro de pesquisa"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -511,14 +511,14 @@ export function ResultWorkspace({
               {availableUsers.length >= 1 && (
                 <div className="relative shrink-0">
                   <Users
-                    className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
                     aria-hidden="true"
                   />
                   <select
                     value={effectiveSelectedUser}
                     onChange={(e) => onSelectedUserChange(e.target.value)}
                     aria-label="Filtrar log consolidado por usuário"
-                    className="min-h-[40px] pl-9 pr-8 py-2 text-xs sm:text-sm font-mono font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:border-sap-500 focus:ring-2 focus:ring-sap-500/20"
+                    className="min-h-[40px] pl-9 pr-8 py-2 text-xs sm:text-sm font-mono font-semibold text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-sap-500 focus:ring-2 focus:ring-sap-500/20"
                   >
                     <option value="ALL">
                       {availableUsers.length > 1
@@ -540,10 +540,10 @@ export function ResultWorkspace({
               )}
             </div>
 
-            <div className="text-xs text-slate-500 font-medium tabular-nums">
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-medium tabular-nums">
               Exibindo{' '}
-              <span className="font-bold text-sap-600">{filteredObjects.length}</span> de{' '}
-              <span className="font-bold text-slate-700">{userScopedObjects.length}</span>{' '}
+              <span className="font-bold text-sap-600 dark:text-sky-400">{filteredObjects.length}</span> de{' '}
+              <span className="font-bold text-slate-700 dark:text-slate-200">{userScopedObjects.length}</span>{' '}
               objeto(s)
             </div>
           </div>
@@ -551,8 +551,8 @@ export function ResultWorkspace({
           {/* Filtro rápido por Usuário quando houver múltiplos usuários no lote */}
           {availableUsers.length > 1 && (
             <div className="flex flex-wrap items-center gap-1.5 pt-1">
-              <span className="text-[11px] font-semibold text-slate-500 mr-1 inline-flex items-center gap-1">
-                <Users className="w-3.5 h-3.5 text-sap-600" aria-hidden="true" />
+              <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mr-1 inline-flex items-center gap-1">
+                <Users className="w-3.5 h-3.5 text-sap-600 dark:text-sky-400" aria-hidden="true" />
                 <span>Separar por Usuário:</span>
               </span>
               <button
@@ -560,8 +560,8 @@ export function ResultWorkspace({
                 onClick={() => onSelectedUserChange('ALL')}
                 className={`min-h-[30px] px-2.5 py-1 rounded-md text-xs font-mono font-semibold transition-colors whitespace-nowrap shrink-0 ${
                   effectiveSelectedUser === 'ALL'
-                    ? 'bg-slate-800 text-white border border-slate-800'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
+                    ? 'bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 border border-slate-800 dark:border-slate-100'
+                    : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                 }`}
               >
                 Todos ({result.objects.length})
@@ -579,7 +579,7 @@ export function ResultWorkspace({
                     className={`min-h-[30px] px-2.5 py-1 rounded-md text-xs font-mono font-semibold transition-colors whitespace-nowrap shrink-0 ${
                       active
                         ? 'bg-sap-600 text-white border border-sap-600'
-                        : 'bg-sap-50 hover:bg-sap-100 text-sap-800 border border-sap-200'
+                        : 'bg-sap-50 dark:bg-sky-950/60 hover:bg-sap-100 dark:hover:bg-sky-900/70 text-sap-800 dark:text-sky-300 border border-sap-200 dark:border-sky-800/70'
                     }`}
                   >
                     {user} ({count})
@@ -602,7 +602,7 @@ export function ResultWorkspace({
                     className={`min-h-[32px] px-2.5 py-1 rounded-md text-xs font-mono font-bold transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 ${
                       isSelected
                         ? 'bg-red-600 text-white border border-red-600'
-                        : 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-300'
+                        : 'bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/70 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-800/70'
                     }`}
                   >
                     <AlertTriangle className="w-3 h-3 shrink-0" aria-hidden="true" />
@@ -619,7 +619,7 @@ export function ResultWorkspace({
                   className={`min-h-[32px] px-2.5 py-1 rounded-md text-xs font-mono font-medium transition-colors duration-150 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500 ${
                     isSelected
                       ? 'bg-sap-500 text-white border border-sap-500'
-                      : 'bg-slate-100 hover:bg-sap-50 text-slate-700 hover:text-sap-700 border border-slate-200'
+                      : 'bg-slate-100 dark:bg-slate-800 hover:bg-sap-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-sap-700 dark:hover:text-sky-300 border border-slate-200 dark:border-slate-700'
                   }`}
                 >
                   {obj.name}
@@ -633,14 +633,14 @@ export function ResultWorkspace({
         {scopedCriticals.length > 0 && (
           <div
             role="alert"
-            className="px-6 py-3.5 bg-red-50 border-b border-red-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+            className="px-6 py-3.5 bg-red-50 dark:bg-red-950/40 border-b border-red-200 dark:border-red-900/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
           >
             <div className="flex items-start sm:items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-red-100 border border-red-200 text-red-600 flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-900/50 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
                 <ShieldAlert className="w-4 h-4" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-xs sm:text-sm font-bold text-red-900">
+                <p className="text-xs sm:text-sm font-bold text-red-900 dark:text-red-200">
                   Atenção: Objetos ou Valores Críticos Detectados ({scopedCriticals.length})
                 </p>
                 <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -655,7 +655,7 @@ export function ResultWorkspace({
                         className={`px-2 py-0.5 rounded text-xs font-mono font-bold border transition-colors whitespace-nowrap shrink-0 inline-flex items-center gap-1 ${
                           active
                             ? 'bg-red-700 text-white border-red-700'
-                            : 'bg-white hover:bg-red-100 text-red-800 border-red-300'
+                            : 'bg-white dark:bg-slate-900 hover:bg-red-100 dark:hover:bg-red-900/60 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800/70'
                         }`}
                       >
                         <AlertTriangle className="w-3 h-3 shrink-0" aria-hidden="true" />
@@ -672,7 +672,7 @@ export function ResultWorkspace({
               onClick={onToggleOnlyCritical}
               className={`min-h-[38px] self-start sm:self-center shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors duration-150 inline-flex items-center gap-1.5 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 ${
                 onlyCritical
-                  ? 'bg-slate-800 hover:bg-slate-900 text-white'
+                  ? 'bg-slate-800 dark:bg-slate-200 hover:bg-slate-900 dark:hover:bg-white text-white dark:text-slate-900'
                   : 'bg-red-600 hover:bg-red-700 text-white'
               }`}
             >
@@ -684,7 +684,7 @@ export function ResultWorkspace({
 
         {/* Área Principal de Exibição */}
         {viewMode === 'console' ? (
-          <div className="p-5 sm:p-6 bg-slate-900 space-y-3">
+          <div className="p-5 sm:p-6 bg-slate-900 dark:bg-slate-950 space-y-3">
             {filteredObjects.length === 0 && !isConsoleEditing ? (
               <div className="min-h-[16rem] flex flex-col items-center justify-center text-center text-slate-400 font-mono text-xs sm:text-sm gap-2">
                 <span>Nenhum objeto corresponde ao filtro informado.</span>
@@ -826,14 +826,14 @@ export function ResultWorkspace({
         ) : (
           <div className="overflow-x-auto">
             {filteredObjects.length === 0 ? (
-              <div className="py-16 text-center text-sm text-slate-500">
+              <div className="py-16 text-center text-sm text-slate-500 dark:text-slate-400">
                 Nenhum objeto corresponde ao filtro informado.
               </div>
             ) : (
               <>
-                <div className="px-6 py-2.5 bg-slate-50/60 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                <div className="px-6 py-2.5 bg-slate-50/60 dark:bg-slate-950/50 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400">
                   <span className="inline-flex items-center gap-1.5">
-                    <Pencil className="w-3 h-3 text-sap-600" aria-hidden="true" />
+                    <Pencil className="w-3 h-3 text-sap-600 dark:text-sky-400" aria-hidden="true" />
                     <span>
                       Revisão pós-OCR: clique em qualquer <strong>Objeto</strong>, <strong>Campo</strong>, <strong>Valor</strong> ou <strong>Usuário</strong> na tabela para corrigir antes de exportar (Enter salva · Esc cancela).
                     </span>
@@ -841,7 +841,7 @@ export function ResultWorkspace({
                 </div>
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600">
+                    <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/70 text-xs font-semibold text-slate-600 dark:text-slate-300">
                       <th className="py-3 px-6 w-14 text-right tabular-nums">#</th>
                       <th className="py-3 px-4">Objeto</th>
                       <th className="py-3 px-4">Campo</th>
@@ -853,7 +853,7 @@ export function ResultWorkspace({
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200 text-xs sm:text-sm">
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-xs sm:text-sm">
                     {filteredObjects.flatMap((obj, objIdx) =>
                       obj.fields.map((field, fieldIdx) => {
                         const rowCritical =
@@ -883,14 +883,14 @@ export function ResultWorkspace({
                         return (
                           <tr
                             key={`${obj.name}-${field.name}`}
-                            className="group hover:bg-slate-50/90 transition-colors"
+                            className="group hover:bg-slate-50/90 dark:hover:bg-slate-800/60 transition-colors"
                           >
-                            <td className="py-3 px-6 text-right font-mono tabular-nums text-slate-400">
+                            <td className="py-3 px-6 text-right font-mono tabular-nums text-slate-400 dark:text-slate-500">
                               {fieldIdx === 0 ? objIdx + 1 : ''}
                             </td>
 
                             {/* Célula Objeto (editável no primeiro campo do bloco) */}
-                            <td className="py-3 px-4 font-mono font-bold text-slate-900 whitespace-nowrap">
+                            <td className="py-3 px-4 font-mono font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">
                               {fieldIdx === 0 ? (
                                 isEditingObj ? (
                                   <div className="inline-flex items-center gap-1">
@@ -907,14 +907,14 @@ export function ResultWorkspace({
                                       onBlur={commitEdit}
                                       onKeyDown={handleEditKeyDown}
                                       aria-label={`Editar nome do objeto ${obj.name}`}
-                                      className="w-56 sm:w-64 px-2.5 py-1 text-xs font-mono uppercase bg-white border border-sap-500 rounded focus:outline-none focus:ring-2 focus:ring-sap-500/20"
+                                      className="w-56 sm:w-64 px-2.5 py-1 text-xs font-mono uppercase bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-sap-500 rounded focus:outline-none focus:ring-2 focus:ring-sap-500/20"
                                     />
                                     <button
                                       type="button"
                                       onMouseDown={(e) => e.preventDefault()}
                                       onClick={commitEdit}
                                       aria-label="Salvar nome do objeto"
-                                      className="p-1 text-emerald-600 hover:bg-emerald-50 rounded"
+                                      className="p-1 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 rounded"
                                     >
                                       <Check className="w-3.5 h-3.5" />
                                     </button>
@@ -923,7 +923,7 @@ export function ResultWorkspace({
                                       onMouseDown={(e) => e.preventDefault()}
                                       onClick={() => setEditingCell(null)}
                                       aria-label="Cancelar edição"
-                                      className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"
+                                      className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
                                     >
                                       <X className="w-3.5 h-3.5" />
                                     </button>
@@ -939,11 +939,11 @@ export function ResultWorkspace({
                                       })
                                     }
                                     title="Clique para editar o nome do objeto"
-                                    className="inline-flex items-center gap-1.5 text-left hover:text-sap-600 rounded px-1.5 -mx-1.5 py-0.5 hover:bg-sap-50/70 transition-colors"
+                                    className="inline-flex items-center gap-1.5 text-left hover:text-sap-600 dark:hover:text-sky-400 rounded px-1.5 -mx-1.5 py-0.5 hover:bg-sap-50/70 dark:hover:bg-slate-800 transition-colors"
                                   >
                                     <span>{obj.name}</span>
                                     <Pencil
-                                      className="w-3 h-3 text-slate-300 group-hover:text-sap-500 shrink-0"
+                                      className="w-3 h-3 text-slate-300 dark:text-slate-600 group-hover:text-sap-500 dark:group-hover:text-sky-400 shrink-0"
                                       aria-hidden="true"
                                     />
                                   </button>
@@ -954,7 +954,7 @@ export function ResultWorkspace({
                             </td>
 
                             {/* Célula Campo (editável) */}
-                            <td className="py-3 px-4 font-mono text-slate-600 whitespace-nowrap">
+                            <td className="py-3 px-4 font-mono text-slate-600 dark:text-slate-300 whitespace-nowrap">
                               {isEditingField ? (
                                 <div className="inline-flex items-center gap-1">
                                   <input
@@ -970,14 +970,14 @@ export function ResultWorkspace({
                                     onBlur={commitEdit}
                                     onKeyDown={handleEditKeyDown}
                                     aria-label={`Editar nome do campo ${field.name}`}
-                                    className="w-40 sm:w-48 px-2.5 py-1 text-xs font-mono uppercase bg-white border border-sap-500 rounded focus:outline-none focus:ring-2 focus:ring-sap-500/20"
+                                    className="w-40 sm:w-48 px-2.5 py-1 text-xs font-mono uppercase bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-sap-500 rounded focus:outline-none focus:ring-2 focus:ring-sap-500/20"
                                   />
                                   <button
                                     type="button"
                                     onMouseDown={(e) => e.preventDefault()}
                                     onClick={commitEdit}
                                     aria-label="Salvar nome do campo"
-                                    className="p-1 text-emerald-600 hover:bg-emerald-50 rounded"
+                                    className="p-1 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 rounded"
                                   >
                                     <Check className="w-3.5 h-3.5" />
                                   </button>
@@ -986,7 +986,7 @@ export function ResultWorkspace({
                                     onMouseDown={(e) => e.preventDefault()}
                                     onClick={() => setEditingCell(null)}
                                     aria-label="Cancelar edição"
-                                    className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"
+                                    className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
                                   >
                                     <X className="w-3.5 h-3.5" />
                                   </button>
@@ -1003,11 +1003,11 @@ export function ResultWorkspace({
                                     })
                                   }
                                   title="Clique para editar o nome do campo"
-                                  className="inline-flex items-center gap-1.5 text-left hover:text-sap-600 rounded px-1.5 -mx-1.5 py-0.5 hover:bg-sap-50/70 transition-colors"
+                                  className="inline-flex items-center gap-1.5 text-left hover:text-sap-600 dark:hover:text-sky-400 rounded px-1.5 -mx-1.5 py-0.5 hover:bg-sap-50/70 dark:hover:bg-slate-800 transition-colors"
                                 >
                                   <span>{field.name}</span>
                                   <Pencil
-                                    className="w-3 h-3 text-slate-300 group-hover:text-sap-500 shrink-0"
+                                    className="w-3 h-3 text-slate-300 dark:text-slate-600 group-hover:text-sap-500 dark:group-hover:text-sky-400 shrink-0"
                                     aria-hidden="true"
                                   />
                                 </button>
@@ -1032,14 +1032,14 @@ export function ResultWorkspace({
                                     onKeyDown={handleEditKeyDown}
                                     placeholder="Separe múltiplos valores por vírgula"
                                     aria-label={`Editar valores do campo ${field.name}`}
-                                    className="flex-1 min-w-[14rem] px-2.5 py-1 text-xs font-mono bg-white border border-sap-500 rounded focus:outline-none focus:ring-2 focus:ring-sap-500/20"
+                                    className="flex-1 min-w-[14rem] px-2.5 py-1 text-xs font-mono bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-sap-500 rounded focus:outline-none focus:ring-2 focus:ring-sap-500/20"
                                   />
                                   <button
                                     type="button"
                                     onMouseDown={(e) => e.preventDefault()}
                                     onClick={commitEdit}
                                     aria-label="Salvar valores"
-                                    className="p-1 text-emerald-600 hover:bg-emerald-50 rounded shrink-0"
+                                    className="p-1 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 rounded shrink-0"
                                   >
                                     <Check className="w-3.5 h-3.5" />
                                   </button>
@@ -1048,7 +1048,7 @@ export function ResultWorkspace({
                                     onMouseDown={(e) => e.preventDefault()}
                                     onClick={() => setEditingCell(null)}
                                     aria-label="Cancelar edição"
-                                    className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded shrink-0"
+                                    className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded shrink-0"
                                   >
                                     <X className="w-3.5 h-3.5" />
                                   </button>
@@ -1065,7 +1065,7 @@ export function ResultWorkspace({
                                     })
                                   }
                                   title="Clique para editar ou corrigir valores (separe por vírgula)"
-                                  className="w-full text-left rounded px-1.5 -mx-1.5 py-0.5 hover:bg-sap-50/70 transition-colors inline-flex items-center justify-between gap-2"
+                                  className="w-full text-left rounded px-1.5 -mx-1.5 py-0.5 hover:bg-sap-50/70 dark:hover:bg-slate-800 transition-colors inline-flex items-center justify-between gap-2"
                                 >
                                   {field.values.length > 0 ? (
                                     <div className="flex flex-wrap gap-1.5">
@@ -1073,12 +1073,12 @@ export function ResultWorkspace({
                                         isCriticalToken(val, criticalSet) ? (
                                           <span
                                             key={`${val}-${vIdx}`}
-                                            className="px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 font-bold"
+                                            className="px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/70 font-bold"
                                           >
                                             {val}
                                           </span>
                                         ) : (
-                                          <span key={`${val}-${vIdx}`} className="text-slate-800">
+                                          <span key={`${val}-${vIdx}`} className="text-slate-800 dark:text-slate-200">
                                             {val}
                                             {vIdx < field.values.length - 1 ? ',' : ''}
                                           </span>
@@ -1086,10 +1086,10 @@ export function ResultWorkspace({
                                       )}
                                     </div>
                                   ) : (
-                                    <span className="text-slate-400 italic">(vazio)</span>
+                                    <span className="text-slate-400 dark:text-slate-500 italic">(vazio)</span>
                                   )}
                                   <Pencil
-                                    className="w-3 h-3 text-slate-300 group-hover:text-sap-500 shrink-0"
+                                    className="w-3 h-3 text-slate-300 dark:text-slate-600 group-hover:text-sap-500 dark:group-hover:text-sky-400 shrink-0"
                                     aria-hidden="true"
                                   />
                                 </button>
@@ -1097,7 +1097,7 @@ export function ResultWorkspace({
                             </td>
 
                             {/* Célula Usuário(s) (editável no primeiro campo do bloco) */}
-                            <td className="py-3 px-4 font-mono text-xs text-slate-600 whitespace-nowrap">
+                            <td className="py-3 px-4 font-mono text-xs text-slate-600 dark:text-slate-300 whitespace-nowrap">
                               {fieldIdx === 0 ? (
                                 isEditingUsers ? (
                                   <div className="inline-flex items-center gap-1">
@@ -1115,14 +1115,14 @@ export function ResultWorkspace({
                                       onKeyDown={handleEditKeyDown}
                                       placeholder="Ex: JOAO.SILVA, MARIA.S"
                                       aria-label={`Editar usuários do objeto ${obj.name}`}
-                                      className="w-48 px-2.5 py-1 text-xs font-mono uppercase bg-white border border-sap-500 rounded focus:outline-none focus:ring-2 focus:ring-sap-500/20"
+                                      className="w-48 px-2.5 py-1 text-xs font-mono uppercase bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-sap-500 rounded focus:outline-none focus:ring-2 focus:ring-sap-500/20"
                                     />
                                     <button
                                       type="button"
                                       onMouseDown={(e) => e.preventDefault()}
                                       onClick={commitEdit}
                                       aria-label="Salvar usuários"
-                                      className="p-1 text-emerald-600 hover:bg-emerald-50 rounded"
+                                      className="p-1 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 rounded"
                                     >
                                       <Check className="w-3.5 h-3.5" />
                                     </button>
@@ -1131,7 +1131,7 @@ export function ResultWorkspace({
                                       onMouseDown={(e) => e.preventDefault()}
                                       onClick={() => setEditingCell(null)}
                                       aria-label="Cancelar edição"
-                                      className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"
+                                      className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
                                     >
                                       <X className="w-3.5 h-3.5" />
                                     </button>
@@ -1151,7 +1151,7 @@ export function ResultWorkspace({
                                       })
                                     }
                                     title="Clique para editar ou atribuir usuário(s) (separe por vírgula)"
-                                    className="inline-flex items-center gap-1.5 text-left rounded px-1.5 -mx-1.5 py-0.5 hover:bg-sap-50/70 transition-colors"
+                                    className="inline-flex items-center gap-1.5 text-left rounded px-1.5 -mx-1.5 py-0.5 hover:bg-sap-50/70 dark:hover:bg-slate-800 transition-colors"
                                   >
                                     <div className="flex flex-wrap gap-1">
                                       {objUsersList.map((u) => (
@@ -1159,8 +1159,8 @@ export function ResultWorkspace({
                                           key={u}
                                           className={`px-1.5 py-0.5 rounded border text-[11px] ${
                                             u === UNIDENTIFIED_USER
-                                              ? 'bg-slate-50 border-slate-200 text-slate-400 italic'
-                                              : 'bg-slate-100 border-slate-200 text-slate-700'
+                                              ? 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 italic'
+                                              : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200'
                                           }`}
                                         >
                                           {u}
@@ -1168,7 +1168,7 @@ export function ResultWorkspace({
                                       ))}
                                     </div>
                                     <Pencil
-                                      className="w-3 h-3 text-slate-300 group-hover:text-sap-500 shrink-0"
+                                      className="w-3 h-3 text-slate-300 dark:text-slate-600 group-hover:text-sap-500 dark:group-hover:text-sky-400 shrink-0"
                                       aria-hidden="true"
                                     />
                                   </button>
@@ -1180,13 +1180,13 @@ export function ResultWorkspace({
 
                             <td className="py-3 px-4 text-right whitespace-nowrap">
                               {rowCritical ? (
-                                <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700">
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 dark:text-red-400">
                                   <AlertTriangle className="w-3.5 h-3.5" aria-hidden="true" />
                                   <span>Crítico</span>
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500">
-                                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
+                                <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
                                   <span>Padrão</span>
                                 </span>
                               )}
@@ -1198,7 +1198,7 @@ export function ResultWorkspace({
                                 onClick={() => onDeleteField(obj.name, field.name)}
                                 title={`Remover linha ${obj.name} · ${field.name}`}
                                 aria-label={`Remover linha ${obj.name} campo ${field.name}`}
-                                className="p-1.5 rounded-lg text-slate-300 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                className="p-1.5 rounded-lg text-slate-300 dark:text-slate-600 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/60 transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>

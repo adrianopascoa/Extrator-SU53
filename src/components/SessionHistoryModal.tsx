@@ -44,23 +44,23 @@ export function SessionHistoryModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="historico-sessoes-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-slate-950/75 backdrop-blur-[2px]"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden"
+        className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between gap-4 bg-slate-50/70">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 bg-slate-50/70 dark:bg-slate-800/70">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
               <Clock className="w-4 h-4" aria-hidden="true" />
             </div>
             <div>
-              <h2 id="historico-sessoes-title" className="text-base font-semibold text-slate-900">
+              <h2 id="historico-sessoes-title" className="text-base font-semibold text-slate-900 dark:text-white">
                 Histórico de Sessões Locais
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Extrações recentes salvas localmente no navegador para reabertura rápida.
               </p>
             </div>
@@ -70,7 +70,7 @@ export function SessionHistoryModal({
             type="button"
             onClick={onClose}
             aria-label="Fechar histórico"
-            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
+            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
           >
             <X className="w-4 h-4" />
           </button>
@@ -79,35 +79,35 @@ export function SessionHistoryModal({
         <div className="p-6 overflow-y-auto">
           {sessions.length === 0 ? (
             <div className="py-10 text-center space-y-2">
-              <p className="text-sm font-medium text-slate-700">
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
                 Nenhuma sessão salva ainda
               </p>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                 Após executar uma extração, o resultado consolidado ficará disponível aqui para consulta posterior.
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-200 border border-slate-200 rounded-xl overflow-hidden">
+            <div className="divide-y divide-slate-200 dark:divide-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
               {sessions.map((session) => (
                 <div
                   key={session.id}
-                  className="p-4 bg-white hover:bg-slate-50/80 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="p-4 bg-white dark:bg-slate-900 hover:bg-slate-50/80 dark:hover:bg-slate-800/60 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
-                      <span className="font-mono font-bold text-slate-900">
+                      <span className="font-mono font-bold text-slate-900 dark:text-white">
                         {session.result.metadata.user}
                       </span>
-                      <span className="text-slate-300" aria-hidden="true">·</span>
-                      <span className="font-mono text-slate-600">
+                      <span className="text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
+                      <span className="font-mono text-slate-600 dark:text-slate-300">
                         {session.result.metadata.sys}
                       </span>
-                      <span className="text-slate-300" aria-hidden="true">·</span>
-                      <span className="text-slate-500 font-mono tabular-nums">
+                      <span className="text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
+                      <span className="text-slate-500 dark:text-slate-400 font-mono tabular-nums">
                         {new Date(session.createdAt).toLocaleString('pt-BR')}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 truncate" title={session.fileNames.join(', ')}>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate" title={session.fileNames.join(', ')}>
                       {session.result.metadata.objectCount} objeto(s) · {session.result.metadata.rowLabel} · {session.fileNames.join(', ')}
                     </p>
                   </div>
@@ -125,7 +125,7 @@ export function SessionHistoryModal({
                       type="button"
                       onClick={() => onDeleteSession(session.id)}
                       aria-label="Excluir sessão do histórico"
-                      className="min-h-[36px] p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-lg transition-colors shrink-0"
+                      className="min-h-[36px] p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/60 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors shrink-0"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -136,12 +136,12 @@ export function SessionHistoryModal({
           )}
         </div>
 
-        <div className="px-6 py-3.5 border-t border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+        <div className="px-6 py-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/70 flex flex-wrap items-center justify-between gap-3">
           {sessions.length > 0 ? (
             <button
               type="button"
               onClick={onClearHistory}
-              className="text-xs font-medium text-red-600 hover:text-red-700 hover:underline underline-offset-2"
+              className="text-xs font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:underline underline-offset-2"
             >
               Limpar histórico local
             </button>
@@ -162,7 +162,7 @@ export function SessionHistoryModal({
             <button
               type="button"
               onClick={onClose}
-              className="min-h-[38px] px-4 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition-colors"
+              className="min-h-[38px] px-4 py-1.5 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-semibold rounded-lg transition-colors"
             >
               Fechar
             </button>

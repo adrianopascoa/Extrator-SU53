@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
-import { BookOpen, Clock, ShieldCheck, SlidersHorizontal } from 'lucide-react';
+import { BookOpen, Clock, Moon, ShieldCheck, SlidersHorizontal, Sun } from 'lucide-react';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { ResultWorkspace } from './components/ResultWorkspace';
@@ -54,7 +54,23 @@ const VALID_IMAGE_MIME_TYPES = new Set([
 const VALID_PDF_EXTS = ['.pdf'];
 const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024;
 const HISTORY_STORAGE_KEY = 'sap_su53_local_sessions_v1';
+const THEME_STORAGE_KEY = 'sap_su53_theme_v1';
 const MAX_SAVED_SESSIONS = 8;
+
+type ThemeMode = 'light' | 'dark';
+
+function loadInitialTheme(): ThemeMode {
+  try {
+    const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (saved === 'dark' || saved === 'light') return saved;
+    if (document.documentElement.classList.contains('dark')) return 'dark';
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  } catch {
+    return 'light';
+  }
+}
 
 function detectFileKind(file: File): 'html' | 'image' | 'pdf' | null {
   const lowerName = file.name.toLowerCase();
@@ -143,7 +159,26 @@ export default function App() {
   const [isCriticalRulesOpen, setIsCriticalRulesOpen] = useState(false);
   const [criticalItems, setCriticalItems] = useState<string[]>(() => loadCriticalItems());
   const [sessions, setSessions] = useState<SavedExtractionSession[]>(() => loadSavedSessions());
+  const [theme, setTheme] = useState<ThemeMode>(() => loadInitialTheme());
   const resultsAnchorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const isDark = theme === 'dark';
+    document.documentElement.classList.toggle('dark', isDark);
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', isDark ? '#0f172a' : '#0070f2');
+    }
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch {
+      // Ignora erro caso localStorage esteja bloqueado
+    }
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
 
   const persistSessions = useCallback((next: SavedExtractionSession[]) => {
     setSessions(next);
@@ -914,14 +949,14 @@ export default function App() {
   }, [sessions, showToast]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200">
       {/* Top Bar — Contrato de 3 zonas limpo */}
-      <header className="bg-white/95 backdrop-blur-sm border-b border-slate-200/90 sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
+      <header className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200/90 dark:border-slate-800 sticky top-0 z-20 transition-colors duration-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 sm:gap-8">
           <a
             href="#top"
             onClick={() => setActiveNav('importacao')}
-            className="inline-flex items-center gap-2.5 text-lg font-bold tracking-tight text-slate-900 whitespace-nowrap shrink-0"
+            className="inline-flex items-center gap-2.5 text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 whitespace-nowrap shrink-0"
           >
             <img
               src="/assets/aistudio/SAP_Logo_-_Colored_-_32x32_3644d71f.png"
@@ -929,21 +964,21 @@ export default function App() {
               className="h-8 w-8 object-contain shrink-0"
             />
             <span>
-              Extrator <span className="text-sap-600">SU53</span>
+              Extrator <span className="text-sap-600 dark:text-sky-400">SU53</span>
             </span>
           </a>
 
           <nav
             aria-label="Navegação principal"
-            className="hidden md:flex items-center p-1 bg-slate-100/90 border border-slate-200/80 rounded-full text-xs font-medium text-slate-600"
+            className="hidden md:flex items-center p-1 bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 rounded-full text-xs font-medium text-slate-600 dark:text-slate-300"
           >
             <a
               href="#importacao"
               onClick={() => setActiveNav('importacao')}
               className={`px-3.5 py-1.5 rounded-full transition-colors whitespace-nowrap shrink-0 ${
                 activeNav === 'importacao'
-                  ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                  : 'hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs font-semibold'
+                  : 'hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Importação
@@ -953,8 +988,8 @@ export default function App() {
               onClick={() => setActiveNav('resumo')}
               className={`px-3.5 py-1.5 rounded-full transition-colors whitespace-nowrap shrink-0 ${
                 activeNav === 'resumo'
-                  ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                  : 'hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs font-semibold'
+                  : 'hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Resumo
@@ -964,8 +999,8 @@ export default function App() {
               onClick={() => setActiveNav('log-consolidado')}
               className={`px-3.5 py-1.5 rounded-full transition-colors whitespace-nowrap shrink-0 ${
                 activeNav === 'log-consolidado'
-                  ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                  : 'hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs font-semibold'
+                  : 'hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Log Consolidado
@@ -976,10 +1011,27 @@ export default function App() {
             <PWAInstallButton />
             <button
               type="button"
-              onClick={() => setIsGuideOpen(true)}
-              className="min-h-[38px] px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-2xs text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
+              title={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
+              aria-pressed={theme === 'dark'}
+              className="min-h-[38px] px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 shadow-2xs text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
             >
-              <BookOpen className="w-3.5 h-3.5 text-sap-600" aria-hidden="true" />
+              {theme === 'dark' ? (
+                <Sun className="w-3.5 h-3.5 text-amber-400" aria-hidden="true" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-slate-600" aria-hidden="true" />
+              )}
+              <span className="hidden sm:inline">
+                {theme === 'dark' ? 'Claro' : 'Escuro'}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsGuideOpen(true)}
+              className="min-h-[38px] px-3.5 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 shadow-2xs text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-sap-600 dark:text-sky-400" aria-hidden="true" />
               <span>Guia SU53</span>
             </button>
           </div>
@@ -993,18 +1045,18 @@ export default function App() {
       >
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-1">
           <div className="space-y-1.5">
-            <p className="text-xs font-medium text-sap-700 flex flex-wrap items-center gap-x-2 gap-y-1">
+            <p className="text-xs font-medium text-sap-700 dark:text-sky-400 flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="inline-flex items-center gap-1 font-semibold">
-                <ShieldCheck className="w-3.5 h-3.5 text-sap-600" aria-hidden="true" />
+                <ShieldCheck className="w-3.5 h-3.5 text-sap-600 dark:text-sky-400" aria-hidden="true" />
                 <span>Enterprise Security &amp; Audit</span>
               </span>
             </p>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 text-balance">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 text-balance">
               Consolidador de Logs de Autorização SU53
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-1">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-x-2 gap-y-1">
               <span>HTML GUI, PDF &amp; Prints de Tela</span>
-              <span className="text-slate-300" aria-hidden="true">·</span>
+              <span className="text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
               <span>Auditoria de Objetos Críticos</span>
             </p>
           </div>
@@ -1013,17 +1065,17 @@ export default function App() {
             <button
               type="button"
               onClick={() => setIsCriticalRulesOpen(true)}
-              className="min-h-[40px] px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-2xs text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
+              className="min-h-[40px] px-3.5 py-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 shadow-2xs text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
+              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" aria-hidden="true" />
               <span>Regras Críticas ({criticalItems.length})</span>
             </button>
             <button
               type="button"
               onClick={() => setIsHistoryOpen(true)}
-              className="min-h-[40px] px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-2xs text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
+              className="min-h-[40px] px-3.5 py-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 shadow-2xs text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
             >
-              <Clock className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
+              <Clock className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" aria-hidden="true" />
               <span>
                 Histórico de Sessões{sessions.length > 0 ? ` (${sessions.length})` : ''}
               </span>
@@ -1068,8 +1120,8 @@ export default function App() {
       </main>
 
       {/* Rodapé */}
-      <footer className="bg-white border-t border-slate-200 py-5 mt-auto">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-5 mt-auto transition-colors duration-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
           <span>Ferramenta para Analistas SAP Basis &amp; Segurança</span>
           <span>Processamento 100% local no navegador (HTML, PDF e OCR offline sem uso de API externa)</span>
         </div>
