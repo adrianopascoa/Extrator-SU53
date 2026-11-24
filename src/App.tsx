@@ -1,5 +1,7 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { BookOpen, Clock, ShieldCheck, SlidersHorizontal } from 'lucide-react';
+import { OfflineIndicator } from './components/OfflineIndicator';
+import { PWAInstallButton } from './components/PWAInstallButton';
 import { ResultWorkspace } from './components/ResultWorkspace';
 import type { SavedExtractionSession } from './components/SessionHistoryModal';
 import { ToastStack } from './components/ToastStack';
@@ -970,14 +972,17 @@ export default function App() {
             </a>
           </nav>
 
-          <button
-            type="button"
-            onClick={() => setIsGuideOpen(true)}
-            className="min-h-[38px] px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-2xs text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-sap-600" aria-hidden="true" />
-            <span>Guia SU53</span>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <PWAInstallButton />
+            <button
+              type="button"
+              onClick={() => setIsGuideOpen(true)}
+              className="min-h-[38px] px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-2xs text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sap-500"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-sap-600" aria-hidden="true" />
+              <span>Guia SU53</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -1100,6 +1105,7 @@ export default function App() {
         )}
       </Suspense>
 
+      <OfflineIndicator />
       <ToastStack toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
