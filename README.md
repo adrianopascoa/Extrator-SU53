@@ -1,4 +1,4 @@
-# Extrator SU53
+# Extrator - SU53
 
 Consolidador de logs de autorização da transação **SAP SU53** em lote, projetado para analistas **SAP Basis & Segurança** unificarem objetos, campos, valores e usuários sem duplicidades — com processamento **100% local no navegador** e zero dependência de APIs externas.
 
