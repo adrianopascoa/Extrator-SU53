@@ -142,7 +142,7 @@ export function ResultWorkspace({
                 id="painel-diagnostico-heading"
                 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100"
               >
-                Painel de Consolidação &amp; Diagnóstico
+                Painel de Consolidação &amp; Diagnóstico.
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                 Visão consolidada por objeto de autorização, usuário, campos críticos e exportação em planilha.
