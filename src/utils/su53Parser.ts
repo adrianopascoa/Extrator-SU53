@@ -7,8 +7,9 @@ import {
 import { DEFAULT_CRITICAL_ITEMS } from './criticalRules';
 import {
   extractUserCandidateFromText,
-  INVALID_USER_TOKENS,
   OcrSU53Extraction,
+  sanitizeUserCandidate,
+  stripDiacritics,
 } from './su53TextEngine';
 
 export const CRITICAL_ITEMS = new Set<string>(DEFAULT_CRITICAL_ITEMS);
@@ -78,6 +79,89 @@ function addEntryValue(
   }
 }
 
+const USER_LABEL_ONLY_REGEX =
+  /^(?:n[o0]me\s+(?:d[eo]\s+)?(?:usu[a-z0-9.]{2,8}|usr\.?)|n[o0]me\s+(?:usu[a-z0-9.]{2,8}|usr\.?)|usu[a-z0-9.]{2,8}(?:\s+sap)?|(?:sap\s+)?user(?:\s*(?:name|id|account))?|bname|sy-?uname|uname|benutzer(?:name)?)\s*:?$/i;
+
+const USER_LABEL_INLINE_REGEX =
+  /^(?:n[o0]me\s+(?:d[eo]\s+)?(?:usu[a-z0-9.]{2,8}|usr\.?)|n[o0]me\s+(?:usu[a-z0-9.]{2,8}|usr\.?)|usu[a-z0-9.]{2,8}(?:\s+sap)?|(?:sap\s+)?user(?:\s*(?:name|id|account))?|bname|sy-?uname|uname|benutzer(?:name)?)\s*[:=\-|›»>\s]+\s*([A-Z0-9_\-.]{2,20})$/i;
+
+const HEADER_BLOCK_USER_ANCHOR_REGEX =
+  /(?:n[o0]me\s*(?:d[eo]\s*)?(?:usu[a-z0-9.]{2,8}|usr\.?)|(?:sap\s+)?user(?:\s*(?:name|id|account))?|bname|sy-?uname|uname|benutzer(?:name)?|\busu[a-z0-9.]{2,8}\b)/i;
+
+function extractUserFromBlockContext(rawText: string): string | undefined {
+  if (!rawText) return undefined;
+
+  const lines = stripDiacritics(rawText)
+    .split(/\r?\n/)
+    .map((l) => l.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim())
+    .filter(Boolean);
+
+  if (lines.length === 0) return undefined;
+
+  const tableHeaderIdx = lines.findIndex(
+    (l) =>
+      /\b(?:objeto|object|objct)\b/i.test(l) &&
+      /\b(?:campo|field|valor|value)\b/i.test(l)
+  );
+  const headerLines =
+    tableHeaderIdx !== -1 ? lines.slice(0, tableHeaderIdx) : lines;
+
+  // Identifica eventual código de sistema já presente no bloco para não confundir SID com usuário
+  let detectedSystem: string | undefined;
+  for (const l of headerLines) {
+    const sysMatch = l.match(/(?:Sistema|System|SYSID)\s*[:\-]?\s*([A-Z0-9]{3})\b/i);
+    if (sysMatch?.[1]) {
+      detectedSystem = sysMatch[1].trim().toUpperCase();
+      break;
+    }
+  }
+
+  for (let i = 0; i < headerLines.length; i++) {
+    const line = headerLines[i];
+    if (/buffer\s+d[eo]\s+usu/i.test(line)) continue;
+    if (/verif(?:icacao)?\s+para\s+usu/i.test(line)) continue;
+    if (!HEADER_BLOCK_USER_ANCHOR_REGEX.test(line)) continue;
+
+    // 1. Tenta captura direta na mesma linha após a label
+    const sameLineMatch = line.match(
+      /(?:n[o0]me\s*(?:d[eo]\s*)?(?:usu[a-z0-9.]{2,8}|usr\.?)|(?:sap\s+)?user(?:\s*(?:name|id|account))?|bname|sy-?uname|uname|benutzer(?:name)?|usu[a-z0-9.]{2,8})\s*[:=\-|›»>\s]+(.+)$/i
+    );
+    if (sameLineMatch?.[1]) {
+      const tokens = sameLineMatch[1].split(/\s+/).slice(0, 3);
+      for (const tok of tokens) {
+        const candidate = sanitizeUserCandidate(tok);
+        if (candidate && candidate !== detectedSystem) return candidate;
+      }
+    }
+
+    // 2. Fallback em linhas adjacentes (+1, +2, +3, -1) e no contexto do bloco de cabeçalho
+    const neighborOffsets = [1, 2, 3, -1, 4, 5];
+    for (const off of neighborOffsets) {
+      const targetIdx = i + off;
+      if (targetIdx < 0 || targetIdx >= headerLines.length) continue;
+      const adjLine = headerLines[targetIdx];
+
+      if (
+        /^(?:sistema|system|sysid|mandante|client|mandt|data|date|hora|time|instancia|instance|param)/i.test(
+          adjLine
+        )
+      ) {
+        continue;
+      }
+
+      const adjTokens = adjLine.split(/\s+/);
+      // Prioriza linhas curtas ou início de linha adjacente dentro do bloco de metadados
+      const limit = adjTokens.length <= 2 ? adjTokens.length : 1;
+      for (let t = 0; t < limit; t++) {
+        const candidate = sanitizeUserCandidate(adjTokens[t]);
+        if (candidate && candidate !== detectedSystem) return candidate;
+      }
+    }
+  }
+
+  return undefined;
+}
+
 function extractSpacedTextFromHtml(doc: Document): string {
   if (!doc.body) return '';
   const blocks: string[] = [];
@@ -94,8 +178,8 @@ function extractSpacedTextFromHtml(doc: Document): string {
   const clone = doc.body.cloneNode(true) as HTMLElement;
   clone.querySelectorAll('script, style').forEach((el) => el.remove());
   const rawHtmlText = (clone.innerHTML || '')
-    .replace(/<(br|\/tr|\/p|\/div|\/li|\/h[1-6])\b[^>]*>/gi, '\n')
-    .replace(/<\/(td|th|span|font|b|strong|nobr)>/gi, ' ')
+    .replace(/<(br|\/tr|\/p|\/div|\/li|\/h[1-6]|\/dt|\/dd)\b[^>]*>/gi, '\n')
+    .replace(/<\/(td|th|span|font|b|strong|nobr|label)>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;|&#160;/gi, ' ')
     .replace(/[ \t]+/g, ' ');
@@ -113,55 +197,121 @@ function parseHTMLFilesIntoMaps(
 
   htmlFiles.forEach((fileObj) => {
     const doc = parser.parseFromString(fileObj.content || '', 'text/html');
-    const spacedText = extractSpacedTextFromHtml(doc);
+    const tables = Array.from(doc.querySelectorAll('table'));
 
     let fileUser = UNIDENTIFIED_USER;
-    const detectedFromText = extractUserCandidateFromText(spacedText);
-    if (detectedFromText) {
-      fileUser = detectedFromText;
-      identifiedUsersSet.add(detectedFromText);
-    }
+    let fileSystem = '';
+    let fileClient = '';
 
-    const tables = doc.querySelectorAll('table');
+    // Prioridade 1: Extração estruturada nas células das tabelas HTML (usuário, sistema e mandante)
+    for (const table of tables) {
+      const rows = Array.from(table.querySelectorAll('tr'));
+      const rowsMatrix = rows.map((row) =>
+        Array.from(row.querySelectorAll('th, td')).map((c) =>
+          (c.textContent || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim()
+        )
+      );
 
-    // Fallback em pares de células (ex: <td>Nome do usuário</td><td>JOAO.SILVA</td>)
-    if (fileUser === UNIDENTIFIED_USER) {
-      outer: for (const table of Array.from(tables)) {
-        for (const row of Array.from(table.querySelectorAll('tr'))) {
-          const cells = Array.from(row.querySelectorAll('th, td')).map((c) =>
-            (c.textContent || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim()
-          );
-          for (let i = 0; i < cells.length - 1; i++) {
-            if (
-              /^(nome\s+(?:do\s+)?usu[áa]r(?:io|\.)?|usu[áa]r(?:io|\.)?|user(?:\s*(?:name|id))?|bname)\s*:?$/i.test(
-                cells[i]
-              )
-            ) {
-              const candidate = cells[i + 1].replace(/^[:\-\s]+|[:\-\s]+$/g, '').toUpperCase();
-              if (
-                candidate.length >= 2 &&
-                candidate.length <= 20 &&
-                !/^\d+$/.test(candidate) &&
-                !INVALID_USER_TOKENS.has(candidate)
-              ) {
+      for (let r = 0; r < rowsMatrix.length; r++) {
+        const cells = rowsMatrix[r];
+        for (let i = 0; i < cells.length; i++) {
+          const cellNorm = stripDiacritics(cells[i]);
+
+          if (fileUser === UNIDENTIFIED_USER) {
+            const singleCellMatch = cellNorm.match(USER_LABEL_INLINE_REGEX);
+            if (singleCellMatch?.[1]) {
+              const candidate = sanitizeUserCandidate(singleCellMatch[1]);
+              if (candidate) {
                 fileUser = candidate;
                 identifiedUsersSet.add(candidate);
-                break outer;
+              }
+            } else if (USER_LABEL_ONLY_REGEX.test(cellNorm)) {
+              if (i < cells.length - 1) {
+                const candidate = sanitizeUserCandidate(cells[i + 1]);
+                if (candidate) {
+                  fileUser = candidate;
+                  identifiedUsersSet.add(candidate);
+                }
+              }
+              if (
+                fileUser === UNIDENTIFIED_USER &&
+                r + 1 < rowsMatrix.length &&
+                i < rowsMatrix[r + 1].length
+              ) {
+                const belowCandidate = sanitizeUserCandidate(rowsMatrix[r + 1][i]);
+                if (belowCandidate) {
+                  fileUser = belowCandidate;
+                  identifiedUsersSet.add(belowCandidate);
+                }
+              }
+            }
+          }
+
+          if (!fileSystem) {
+            if (/^(?:sistema|system|sysid)\s*:?$/i.test(cellNorm) && i < cells.length - 1) {
+              const candSys = (cells[i + 1] || '').trim().toUpperCase();
+              if (/^[A-Z0-9]{3}$/.test(candSys)) {
+                fileSystem = candSys;
+              }
+            } else {
+              const inlineSys = cellNorm.match(/^(?:sistema|system|sysid)\s*[:\-]\s*([A-Z0-9]{3})$/i);
+              if (inlineSys?.[1]) {
+                fileSystem = inlineSys[1].toUpperCase();
+              }
+            }
+          }
+
+          if (!fileClient) {
+            if (/^(?:mandante|client|mandt)\s*:?$/i.test(cellNorm) && i < cells.length - 1) {
+              const candCli = (cells[i + 1] || '').trim();
+              if (/^\d{3}$/.test(candCli)) {
+                fileClient = candCli;
+              }
+            } else {
+              const inlineCli = cellNorm.match(/^(?:mandante|client|mandt)\s*[:\-]\s*(\d{3})$/i);
+              if (inlineCli?.[1]) {
+                fileClient = inlineCli[1];
               }
             }
           }
         }
+
+        if (fileUser !== UNIDENTIFIED_USER && fileSystem && fileClient) {
+          break;
+        }
+      }
+
+      if (fileUser !== UNIDENTIFIED_USER && fileSystem && fileClient) {
+        break;
       }
     }
 
-    const sysMatch = spacedText.match(/(?:Sistema|System|SYSID)\s*[:\-]?\s*([A-Z0-9]{3})\b/i);
-    const cliMatch = spacedText.match(/(?:Mandante|Client|MANDT)\s*[:\-]?\s*(\d{3})\b/i);
-    if (sysMatch || cliMatch) {
-      const sysStr = sysMatch ? sysMatch[1].toUpperCase() : '';
-      const cliStr = cliMatch ? cliMatch[1] : '';
-      const combined = [sysStr, cliStr].filter(Boolean).join(' / ');
-      if (combined) systemsSet.add(combined);
+    // Prioridade 2: Fallback textual completo somente se algum metadado não foi encontrado nas células
+    if (fileUser === UNIDENTIFIED_USER || !fileSystem || !fileClient) {
+      const spacedText = extractSpacedTextFromHtml(doc);
+      if (fileUser === UNIDENTIFIED_USER) {
+        const combinedText = `${doc.title || ''}\n${spacedText}`;
+        const detectedFromText =
+          extractUserCandidateFromText(combinedText) ??
+          extractUserFromBlockContext(combinedText);
+        if (detectedFromText) {
+          fileUser = detectedFromText;
+          identifiedUsersSet.add(detectedFromText);
+        }
+      }
+
+      if (!fileSystem) {
+        const sysMatch = spacedText.match(/(?:Sistema|System|SYSID)\s*[:\-]?\s*([A-Z0-9]{3})\b/i);
+        if (sysMatch?.[1]) fileSystem = sysMatch[1].toUpperCase();
+      }
+      if (!fileClient) {
+        const cliMatch = spacedText.match(/(?:Mandante|Client|MANDT)\s*[:\-]?\s*(\d{3})\b/i);
+        if (cliMatch?.[1]) fileClient = cliMatch[1];
+      }
     }
+
+    const combined = [fileSystem, fileClient].filter(Boolean).join(' / ');
+    if (combined) systemsSet.add(combined);
 
     tables.forEach((table) => {
       const rows = Array.from(table.querySelectorAll('tr'));
@@ -180,7 +330,9 @@ function parseHTMLFilesIntoMaps(
         if (foundObjIdx !== -1) {
           objColIdx = foundObjIdx;
           userColIdx = cells.findIndex((c) =>
-            /^(usu[áa]rio|usuario|user|bname)$/i.test(c)
+            /^(?:verif(?:icacao)?\s+para\s+usuar(?:io|\.)?|usuar(?:io|\.)?|user|bname|benutzer)$/i.test(
+              stripDiacritics(c)
+            )
           );
           fieldValuePairs = [];
 
@@ -207,12 +359,8 @@ function parseHTMLFilesIntoMaps(
 
           let rowUser = fileUser;
           if (userColIdx !== -1 && cells[userColIdx]) {
-            const candidate = cells[userColIdx].trim().toUpperCase();
-            if (
-              candidate.length >= 2 &&
-              candidate.length <= 20 &&
-              !INVALID_USER_TOKENS.has(candidate)
-            ) {
+            const candidate = sanitizeUserCandidate(cells[userColIdx]);
+            if (candidate) {
               rowUser = candidate;
               identifiedUsersSet.add(candidate);
             }
@@ -260,8 +408,11 @@ function mergeStructuredExtractionsIntoMaps(
   responses.forEach((data) => {
     let sourceUser = UNIDENTIFIED_USER;
     if (data.user && data.user.trim()) {
-      sourceUser = data.user.trim().toUpperCase();
-      identifiedUsersSet.add(sourceUser);
+      const sanitized = sanitizeUserCandidate(data.user);
+      if (sanitized) {
+        sourceUser = sanitized;
+        identifiedUsersSet.add(sanitized);
+      }
     }
 
     const sysStr = data.system ? data.system.trim().toUpperCase() : '';
@@ -325,9 +476,20 @@ export async function extractSU53FromBatch(
     );
   }
 
-  if (imageFiles.length > 0) {
-    const { extractSU53DataFromImages } = await import('./su53ImageOcr');
-    const imageResponses = await extractSU53DataFromImages(imageFiles);
+  const [imageResponses, pdfResponses] = await Promise.all([
+    imageFiles.length > 0
+      ? import('./su53ImageOcr').then(({ extractSU53DataFromImages }) =>
+          extractSU53DataFromImages(imageFiles)
+        )
+      : Promise.resolve([]),
+    pdfFiles.length > 0
+      ? import('./su53PdfExtractor').then(({ extractSU53DataFromPdfs }) =>
+          extractSU53DataFromPdfs(pdfFiles)
+        )
+      : Promise.resolve([]),
+  ]);
+
+  if (imageResponses.length > 0) {
     totalRowsProcessed += mergeStructuredExtractionsIntoMaps(
       imageResponses,
       objectsMap,
@@ -336,9 +498,7 @@ export async function extractSU53FromBatch(
     );
   }
 
-  if (pdfFiles.length > 0) {
-    const { extractSU53DataFromPdfs } = await import('./su53PdfExtractor');
-    const pdfResponses = await extractSU53DataFromPdfs(pdfFiles);
+  if (pdfResponses.length > 0) {
     totalRowsProcessed += mergeStructuredExtractionsIntoMaps(
       pdfResponses,
       objectsMap,

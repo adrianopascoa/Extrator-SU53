@@ -142,6 +142,44 @@ function loadSavedSessions(): SavedExtractionSession[] {
   }
 }
 
+function decodeHtmlArrayBuffer(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  if (bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) {
+    return new TextDecoder('utf-8').decode(bytes.subarray(3));
+  }
+  if (bytes.length >= 2 && bytes[0] === 0xff && bytes[1] === 0xfe) {
+    return new TextDecoder('utf-16le').decode(bytes.subarray(2));
+  }
+  if (bytes.length >= 2 && bytes[0] === 0xfe && bytes[1] === 0xff) {
+    return new TextDecoder('utf-16be').decode(bytes.subarray(2));
+  }
+
+  // Lê os primeiros 4 KB em latin1 para checar declaração <meta charset=...>
+  const headProbe = new TextDecoder('iso-8859-1').decode(bytes.subarray(0, 4096));
+  const metaMatch = headProbe.match(
+    /<meta[^>]+charset\s*=\s*["']?\s*([a-zA-Z0-9._-]+)\s*["']?/i
+  );
+  const declaredCharset = metaMatch?.[1]?.trim().toLowerCase();
+
+  if (
+    declaredCharset &&
+    declaredCharset !== 'utf-8' &&
+    declaredCharset !== 'utf8'
+  ) {
+    try {
+      return new TextDecoder(declaredCharset).decode(bytes);
+    } catch {
+      // Continua para tentativa UTF-8 estrito + fallback ISO-8859-1
+    }
+  }
+
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch {
+    return new TextDecoder('iso-8859-1').decode(bytes);
+  }
+}
+
 export default function App() {
   const [loadedFiles, setLoadedFiles] = useState<LoadedFile[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -243,8 +281,9 @@ export default function App() {
 
         if (kind === 'html') {
           reader.onload = (e) => {
-            const content =
-              typeof e.target?.result === 'string' ? e.target.result : '';
+            const buffer =
+              e.target?.result instanceof ArrayBuffer ? e.target.result : null;
+            const content = buffer ? decodeHtmlArrayBuffer(buffer) : '';
             upsertQueueFile({
               id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
               name: file.name,
@@ -256,8 +295,10 @@ export default function App() {
           reader.onerror = () => {
             showToast(`Erro ao ler o arquivo "${file.name}".`, 'error');
           };
-          reader.readAsText(file, 'ISO-8859-1');
+          reader.readAsArrayBuffer(file);
         } else if (kind === 'pdf') {
+          void import('./utils/su53PdfExtractor');
+          void import('./utils/su53ImageOcr').then((m) => m.warmUpOcrWorker());
           reader.onload = (e) => {
             const pdfData =
               e.target?.result instanceof ArrayBuffer ? e.target.result : undefined;
